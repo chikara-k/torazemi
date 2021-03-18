@@ -2,18 +2,55 @@ import React from 'react';
 import Article from "./Article"
 
 // Class Componentの書き方
+// stateの設定方法　constructor()内で宣言する　オブジェクト型で記述
 
 class Blog extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isPublished: false,
+      count: 0
+    }
   }
+
+  componentDidMount() {
+    // ボタンがクリックされたらいいねをカウントアップする
+    document.getElementById('counter').addEventListener('click', this.countUp)
+  }
+
+  componentDidUpdate(){
+    if (this.state.count >= 10) {
+        this.setState({count: 0})
+    }
+  }
+
+  componentWillUnmount() {
+    document.getElementById('counter').removeEventListener('click', this.countUp)
+  }
+
+  // 公開状態を反転させる関数　　setState()で値を変更する 関数にラップするのが一般的
+  // setState()内に記述されたstateのみを変更
+  togglePublished = () => {
+    this.setState({
+      isPublished: !this.state.isPublished
+    })
+  };
+
+  countUp = () => {
+    this.setState({ count: this.state.count + 1 })
+  };
+
+  // renderの中で値の変更してはいけない
+　// stateの取得　同コンポーネント内ならthis.state.key名で取得　　子コンポーネントで参照したい場合はpropsとして渡す
   render() {
-    const authorName = "Torahack"
     return (
       <>
-        <Article title="Reactの使い方" order={1} />
-        <Article title="JSXの使い方" order={2} />
-        <Article title="環境構築してみよう" order={3} />
+        <Article 
+            title="Reactの使い方" 
+            isPublished={this.state.isPublished} 
+            toggle={() => this.togglePublished()}
+            count={this.state.count}
+        />
       </>
     )
   }
